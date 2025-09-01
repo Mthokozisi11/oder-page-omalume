@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chicken Order</title>
+  <style>
+    body {
+      font-family: 'Arial Black', Gadget, sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+                  url('https://images.unsplash.com/photo-1604908812146-8f7ad6ac5a52') no-repeat center center/cover;
+      margin: 0;
+      color: #fff;
+      text-align: center;
+    }
+    header {
+      background: linear-gradient(90deg, #ff7b00, #8b4513);
+      padding: 25px;
+      font-size: 36px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 3px 3px 6px #000;
+    }
+    .menu {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin: 30px;
+    }
+    .item {
+      background: rgba(255,255,255,0.9);
+      color: #333;
+      border-radius: 15px;
+      padding: 15px;
+      width: 250px;
+      box-shadow: 0 6px 8px rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .item:hover { transform: scale(1.1); }
+    .item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    #cart {
+      background: rgba(0,0,0,0.8);
+      padding: 25px;
+      margin: 30px auto;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+    }
+    h2, h3 {
+      font-size: 28px;
+      margin-bottom: 15px;
+    }
+    button {
+      background: #ff7b00;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      margin-top: 15px;
+      color: white;
+      font-weight: bold;
+    }
+    button:hover { background: #e86f00; }
+    input, select {
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 90%;
+      font-size: 16px;
+    }
+    label {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    #cart-items li {
+      margin: 8px 0;
+      font-size: 18px;
+      list-style: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>🍗 Chicken Shack Orders</header>
+
+<h2>Choose Your Meal</h2>
+<div class="menu">
+  <div class="item" onclick="addToCart('1/4 Chicken', 35)">
+    <img src="quater.jpeg" alt="Quarter Chicken">
+    <p>1/4 Chicken - R35</p>
+  </div>
+  <div class="item" onclick="addToCart('1/2 Chicken', 65)">
+    <img src="half.jpeg" alt="Half Chicken">
+    <p>1/2 Chicken - R65</p>
+  </div>
+  <div class="item" onclick="addToCart('Full Chicken', 120)">
+    <img src="full.jpeg" alt="Full Chicken">
+    <p>Full Chicken - R120</p>
+  </div>
+</div>
+
+<div id="cart">
+  <h2>🛒 Your Cart</h2>
+  <ul id="cart-items"></ul>
+  <p id="total">Total: R0</p>
+
+  <label><input type="checkbox" id="delivery" onchange="updateTotal()"> Delivery (+R7)</label>
+
+  <h3>Your Details</h3>
+  <input type="text" id="name" placeholder="Your Name"><br>
+  <input type="text" id="phone" placeholder="Phone Number"><br>
+  <input type="text" id="location" placeholder="Your Location"><br>
+
+  <button onclick="checkout()">✅ Send Order</button>
+</div>
+
+<script>
+  let cart = [];
+  let orderNumber = Math.floor(Math.random() * 100000);
+
+  function addToCart(item, price) {
+    cart.push({ item, price });
+    renderCart();
+  }
+
+  function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+  }
+
+  function renderCart() {
+    let cartList = document.getElementById('cart-items');
+    cartList.innerHTML = '';
+    cart.forEach((c, i) => {
+      cartList.innerHTML += `<li>${c.item} - R${c.price}
+        <button onclick="removeItem(${i})">❌ Remove</button></li>`;
+    });
+    updateTotal();
+  }
+
+  function updateTotal() {
+    let sum = cart.reduce((a, b) => a + b.price, 0);
+    if (document.getElementById('delivery').checked) sum += 7;
+    document.getElementById('total').innerText = "Total: R" + sum;
+  }
+
+  function checkout() {
+    let name = document.getElementById('name').value;
+    let phone = document.getElementById('phone').value;
+    let location = document.getElementById('location').value;
+    let delivery = document.getElementById('delivery').checked ? "Yes (+R7)" : "No";
+
+    if (!name || !phone || !location || cart.length === 0) {
+      alert("⚠️ Please fill details and add items to cart.");
+      return;
+    }
+
+    let sum = cart.reduce((a, b) => a + b.price, 0);
+    if (document.getElementById('delivery').checked) sum += 7;
+
+    let order = cart.map(c => c.item + " (R" + c.price + ")").join(", ");
+    let message = `📦 Order No: ${orderNumber}%0A👤 Name: ${name}%0A📞 Phone: ${phone}%0A📍 Location: ${location}%0A🚚 Delivery: ${delivery}%0A🛒 Items: ${order}%0A💰 Total: R${sum}%0A%0A✅ Thank you! Your order will be ready in 30 min. We’ll call you to confirm.`;
+
+    let ownerNumber = "27670036186";
+    let url = `https://wa.me/${ownerNumber}?text=${message}`;
+    window.open(url, "_blank");
+  }
+</script>
+
+</body>
+</html>
